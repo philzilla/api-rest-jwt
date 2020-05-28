@@ -3,29 +3,45 @@ const router = require('express').Router()
 
 // Ajouter un article
 router.post('/add', async (req, res) => {
-  const article = new Article({
-    title: req.body.title,
-    content: req.body.content,
-    cover: req.body.cover,
-    category: req.body.category
+
+  let query = "INSERT INTO `products` (title, content, price) VALUES ('" + req.body.title +"','" + req.body.content + "','" + req.body.price + "')";
+  console.log("query :", query);
+  
+  db.query(query, (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.status(201).json({ product: result });
   });
+
+/*
   try {
     const newArticle = await article.save();
     res.status(201).json({ newArticle });
   } catch (err) {
     res.status(400).json({ message: err });
   }
+  */
+  
 })
 
-// Afficher tous les articles
+// Afficher tous les produits
 router.get('/', async (req, res) => {
-  const article = await Article.find().populate('category', 'title')
-  try {
-    res.status(201).json({ article });
-  } catch (err) {
-    res.status(400).json({ message: err });
-  }
+
+  let query = "SELECT * FROM products"
+
+  db.query(query, (err, result) => {
+    console.log("result :", result);
+    
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.status(201).json({ products: result });
+  });
+
+
 } )
+
 
 // Afficher les articles par catégory
 router.get('/bycategories/:id', async (req, res) => {
